@@ -144,40 +144,20 @@
 
 
 
-<script>
-let audioReady = false;
+ <script>
+    document.getElementById("startBtn").onclick = function () {
+      document.getElementById("appStatus").textContent =
+        "अंजली बोल रही है…";
 
-document.getElementById("startBtn").onclick = function () {
+      if (window.TTS) {
+        TTS.init();
+        TTS.speak("अंजली आपसे संवाद के लिए तैयार है।");
+      }
+    };
 
-  const status = document.getElementById("appStatus");
-  status.textContent = "अंजली तैयार है";
-
-  // 🔓 Audio unlock (एक बार)
-  if (window.TTS && !audioReady) {
-    TTS.init();
-    audioReady = true;
-  }
-
-  if (!window.TTS) {
-    status.textContent = "आवाज़ उपलब्ध नहीं है";
-    return;
-  }
-
-  // 🔊 अंजली बोले
-  const utter = new SpeechSynthesisUtterance("अब आप प्रश्न बोल सकते हैं।");
-  utter.lang = "hi-IN";
-
-  utter.onend = function () {
-    // ✅ केवल TTS पूरी तरह खत्म होने के बाद
-    status.textContent = "मैं सुन रही हूँ…";
-    if (window.STT) {
-      STT.start();
-    }
-  };
-
-  window.speechSynthesis.cancel(); // safety
-  window.speechSynthesis.speak(utter);
-};
-</script>
+    document.getElementById("adminBtn").onclick = function () {
+      window.location.href = "admin.html";
+    };
+  </script>
 </body>
 </html>
