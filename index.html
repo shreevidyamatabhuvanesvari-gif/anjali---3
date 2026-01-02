@@ -151,11 +151,11 @@ document.getElementById("startBtn").onclick = function () {
 
   if (window.TTS) {
     TTS.init();                 
-    TTS.speak("मैं सुन रही हूँ।");
+    TTS.speak = "मैं सुन रही हूँ।";
   }
 
   if (window.STT) {
-    STT.start();                // 🎤 STT शुरू
+    STT.start();                
   }
 
 };
