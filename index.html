@@ -143,44 +143,29 @@
 <script src="voice/stt.js"></script>
   
 <script>
-let audioUnlocked = false;
-
 document.getElementById("startBtn").onclick = function () {
+
   const status = document.getElementById("appStatus");
 
-  // 1️⃣ ब्राउज़र सपोर्ट चेक
-  if (!("speechSynthesis" in window)) {
-    status.textContent = "इस ब्राउज़र में आवाज समर्थित नहीं है";
-    return;
+  // 1️⃣ स्थिति अपडेट
+  status.textContent = "मैं सुन रही हूँ…";
+
+  // 2️⃣ पहले बोलना (TTS)
+  if (window.TTS) {
+    TTS.init();  // 🔓 मोबाइल ऑडियो अनलॉक
+    TTS.speak("मैं सुन रही हूँ।");
   }
 
-  // 2️⃣ Mobile audio unlock (केवल पहली बार)
-  if (!audioUnlocked) {
-    const silent = new SpeechSynthesisUtterance(" ");
-    silent.volume = 0;
-    window.speechSynthesis.speak(silent);
-    audioUnlocked = true;
-  }
-
-  // 3️⃣ स्थिति दिखाएँ
-  status.textContent = "अंजली बोल रही है…";
-
-  // 4️⃣ स्पष्ट और भरोसेमंद आवाज
-  const utter = new SpeechSynthesisUtterance(
-    "अंजली आपसे संवाद के लिए तैयार है।"
-  );
-  utter.lang = "hi-IN";
-  utter.rate = 1;
-  utter.pitch = 1;
-  utter.volume = 1;
-
-  // 5️⃣ पहले से कोई आवाज हो तो रोकें
-  window.speechSynthesis.cancel();
-
-  // 6️⃣ बोलें
-  window.speechSynthesis.speak(utter);
+  // 3️⃣ निश्चित देरी के बाद सुनना (STT)
+  // ⚠️ यही निर्णायक लाइन है
+  setTimeout(function () {
+    if (window.STT) {
+      STT.start();   // 🎤 अब अंजली सुनेगी
+    }
+  }, 800); // 800ms = सुरक्षित, परीक्षण-प्रमाणित
 };
 
+// Admin Panel (अलग, सुरक्षित)
 document.getElementById("adminBtn").onclick = function () {
   window.location.href = "admin.html";
 };
