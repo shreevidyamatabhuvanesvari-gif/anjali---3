@@ -1,6 +1,6 @@
 /* =========================================================
-   stt.js
-   Role: Speech To Text → Answer From KnowledgeBase → Speak
+   voice/stt.js
+   Role: Speech To Text (FINAL, RELIABLE)
    Works on: Android Chrome, Samsung Internet
    ========================================================= */
 
@@ -16,80 +16,110 @@
   }
 
   const recognition = new SpeechRecognition();
+
+  // ---------- CONFIG ----------
   recognition.lang = "hi-IN";
-  recognition.interimResults = false;
-  recognition.continuous = false;
+  recognition.continuous = false;     // user बोले → रुके → result
+  recognition.interimResults = false; // final result only
+  recognition.maxAlternatives = 1;
+
+  let listening = false;
 
   // ---------- START ----------
   function start() {
+    if (listening) return;
+
     try {
       recognition.start();
+      listening = true;
+      console.log("🎤 STT started");
     } catch (e) {
-      console.warn("STT already started");
+      console.error("STT start error", e);
     }
+  }
+
+  // ---------- STOP ----------
+  function stop() {
+    if (!listening) return;
+    recognition.stop();
+    listening = false;
   }
 
   // ---------- RESULT ----------
   recognition.onresult = async function (event) {
+    listening = false;
+
     const transcript =
       event.results[0][0].transcript.trim();
 
-    console.log("🎤 सुना गया:", transcript);
+    console.log("🗣️ User said:", transcript);
 
     // बोलकर पुष्टि
     if (window.TTS) {
       TTS.speak("आपने पूछा: " + transcript);
     }
 
-    // ---- Knowledge lookup ----
-    if (!window.KnowledgeBase) {
-      if (window.TTS) {
-        TTS.speak("मेरा ज्ञान तंत्र अभी उपलब्ध नहीं है।");
-      }
-      return;
-    }
-
+    // --------- ANSWER FROM KNOWLEDGE ----------
     try {
-      await KnowledgeBase.init();
-      const knowledge = await KnowledgeBase.getAll();
-
-      if (!knowledge || knowledge.length === 0) {
-        TTS.speak("मेरे पास अभी कोई सीखा हुआ ज्ञान नहीं है।");
+      if (!window.KnowledgeBase) {
+        if (window.TTS) {
+          TTS.speak("ज्ञान प्रणाली उपलब्ध नहीं है।");
+        }
         return;
       }
 
-      // 🔍 Soft matching (Hindi friendly)
-      const found = knowledge.find(k => {
-        const q = k.question.toLowerCase();
-        const t = transcript.toLowerCase();
-        return q.includes(t) || t.includes(q);
-      });
+      const data = await KnowledgeBase.getAll();
 
-      if (found) {
-        TTS.speak(found.answer);
-      } else {
-        TTS.speak("इस प्रश्न का उत्तर अभी मेरे ज्ञान में नहीं है।");
+      if (!data || !data.length) {
+        if (window.TTS) {
+          TTS.speak("मेरे पास अभी कोई सिखाया गया ज्ञान नहीं है।");
+        }
+        return;
       }
 
-    } catch (e) {
-      console.error(e);
+      // सरल matching (सबसे भरोसेमंद)
+      const found = data.find(item =>
+        transcript.includes(item.question) ||
+        item.question.includes(transcript)
+      );
+
+      if (found) {
+        if (window.TTS) {
+          TTS.speak(found.answer);
+        }
+      } else {
+        if (window.TTS) {
+          TTS.speak("इस प्रश्न का उत्तर अभी मेरे ज्ञान में नहीं है।");
+        }
+      }
+
+    } catch (err) {
+      console.error(err);
       if (window.TTS) {
-        TTS.speak("उत्तर खोजने में समस्या आई है।");
+        TTS.speak("उत्तर खोजने में त्रुटि हुई।");
       }
     }
   };
 
   // ---------- ERROR ----------
   recognition.onerror = function (event) {
-    console.error("STT Error:", event.error);
+    listening = false;
+    console.error("STT error:", event.error);
+
     if (window.TTS) {
-      TTS.speak("मैं आपको ठीक से सुन नहीं पाई।");
+      TTS.speak("मैं ठीक से सुन नहीं पाई। कृपया फिर बोलिए।");
     }
+  };
+
+  recognition.onend = function () {
+    listening = false;
+    console.log("🎤 STT ended");
   };
 
   // ---------- EXPOSE ----------
   window.STT = {
-    start
+    start,
+    stop
   };
 
 })(window);
