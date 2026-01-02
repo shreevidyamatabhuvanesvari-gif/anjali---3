@@ -152,24 +152,31 @@ document.getElementById("startBtn").onclick = function () {
   const status = document.getElementById("appStatus");
   status.textContent = "अंजली तैयार है";
 
-  // 🔓 Audio unlock — केवल पहली बार
+  // 🔓 Audio unlock (एक बार)
   if (window.TTS && !audioReady) {
     TTS.init();
     audioReady = true;
   }
 
-  // 🔊 पहले अंजली बोले
-  if (window.TTS) {
-    TTS.speak("अब आप प्रश्न बोल सकते हैं।");
+  if (!window.TTS) {
+    status.textContent = "आवाज़ उपलब्ध नहीं है";
+    return;
   }
 
-  // 🎤 बोलना खत्म होने के बाद ही सुनना शुरू करें
-  setTimeout(() => {
+  // 🔊 अंजली बोले
+  const utter = new SpeechSynthesisUtterance("अब आप प्रश्न बोल सकते हैं।");
+  utter.lang = "hi-IN";
+
+  utter.onend = function () {
+    // ✅ केवल TTS पूरी तरह खत्म होने के बाद
     status.textContent = "मैं सुन रही हूँ…";
     if (window.STT) {
       STT.start();
     }
-  }, 1200); // ⏱️ TTS पूरा होने का सुरक्षित समय
+  };
+
+  window.speechSynthesis.cancel(); // safety
+  window.speechSynthesis.speak(utter);
 };
 </script>
 </body>
