@@ -145,19 +145,33 @@
 
 
  <script>
-    document.getElementById("startBtn").onclick = function () {
-      document.getElementById("appStatus").textContent =
-        "अंजली बोल रही है…";
+document.getElementById("startBtn").onclick = function () {
 
-      if (window.TTS) {
-        TTS.init();
-        TTS.speak("अंजली आपसे संवाद के लिए तैयार है।");
-      }
-    };
+  document.getElementById("appStatus").textContent =
+    "अंजली बोल रही है…";
 
-    document.getElementById("adminBtn").onclick = function () {
-      window.location.href = "admin.html";
-    };
-  </script>
+  // 🔊 DIRECT, GUARANTEED VOICE
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(
+      "अंजली आपसे संवाद के लिए तैयार है।"
+    );
+    utter.lang = "hi-IN";
+    utter.rate = 1;
+    utter.pitch = 1;
+    utter.volume = 1;
+
+    window.speechSynthesis.speak(utter);
+  } else {
+    document.getElementById("appStatus").textContent =
+      "इस ब्राउज़र में आवाज समर्थित नहीं है";
+  }
+};
+
+document.getElementById("adminBtn").onclick = function () {
+  window.location.href = "admin.html";
+};
+</script>
 </body>
 </html>
