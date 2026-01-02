@@ -94,85 +94,95 @@
 </head>
 
 <body>
-  <main class="card">
+<main class="card">
 
-<!-- 🌸 AVATAR -->
-<div class="avatar">
-  <img src="avatar.png" alt="Anjali Avatar"
-       style="width:84px;height:84px;border-radius:50%;object-fit:cover;">
-</div>
+  <div class="avatar">
+    <img src="avatar.png" alt="Anjali Avatar">
+  </div>
 
-    <div class="title">अंजली</div>
-    <div class="subtitle">स्नेहपूर्ण • समझदार • मर्यादित</div>
+  <div class="title">अंजली</div>
+  <div class="subtitle">स्नेहपूर्ण • समझदार • मर्यादित</div>
 
-    <div class="status" id="appStatus">
-      अंजली तैयार है
-    </div>
+  <div class="status" id="appStatus">अंजली तैयार है</div>
 
-    <div class="actions">
-      <button class="btn" id="startBtn">शुरू करें</button>
-      <button class="btn secondary" id="adminBtn">Admin Panel</button>
-    </div>
+  <div class="actions">
+    <button class="btn" id="startBtn">शुरू करें</button>
+    <button class="btn secondary" id="adminBtn">Admin Panel</button>
+  </div>
 
-    <div class="footer">
-      Foundation • Stage-1
-    </div>
-  </main>
+  <div class="footer">Foundation • Stage-1</div>
+</main>
 
-  <!-- ===================================================
-     SCRIPTS (ORDER IS IMPORTANT & FUTURE SAFE)
-     =================================================== -->
-
-<!-- Core -->
+<!-- ===== CORE SYSTEM ===== -->
 <script src="core/AnjaliCore.js"></script>
 
-<!-- Learning -->
+<!-- ===== LEARNING ===== -->
 <script src="learning/KnowledgeBase.js"></script>
-  <script src="core/AnswerEngine.js"></script>
+<script src="core/AnswerEngine.js"></script>
 <script src="learning/ExperienceMemory.js"></script>
 
-<!-- Bridge / Control -->
+<!-- ===== BRIDGE / CONTROL ===== -->
 <script src="core/LearningBridge.js"></script>
 <script src="core/AdminControl.js"></script>
 
-<!-- Admin tools (future use from index if needed) -->
-<script src="admin/admin_learning_view.js"></script>
-<script src="admin/admin_bulk_loader.js"></script>
-  
-<!-- Voice -->
+<!-- ===== VOICE ===== -->
 <script src="voice/tts.js"></script>
 <script src="voice/stt.js"></script>
-  
+
+<!-- ================= SAFE CONVERSATION LOOP ================= -->
 <script>
-document.getElementById("startBtn").onclick = function () {
+let audioUnlocked = false;
+let conversationActive = false;
 
-  document.getElementById("appStatus").textContent =
-    "अंजली बोल रही है…";
+function startConversation() {
+  const status = document.getElementById("appStatus");
 
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-
-    const utter = new SpeechSynthesisUtterance(
-      "अंजली आपसे संवाद के लिए तैयार है।"
-    );
-    utter.lang = "hi-IN";
-
-    // ✅ यही एकमात्र लाइन है जो सुनने को trigger करेगी
-    utter.onend = function () {
-      document.getElementById("appStatus").textContent =
-        "मैं सुन रही हूँ…";
-      if (window.STT) {
-        STT.start();
-      }
-    };
-
-    window.speechSynthesis.speak(utter);
+  if (window.TTS && !audioUnlocked) {
+    TTS.init();
+    audioUnlocked = true;
   }
+
+  conversationActive = true;
+  status.textContent = "अंजली बोल रही है…";
+
+  TTS.speak("मैं सुन रही हूँ। आप प्रश्न बोल सकते हैं।");
+
+  waitForSpeechEnd(() => {
+    if (window.STT && conversationActive) {
+      status.textContent = "मैं सुन रही हूँ…";
+      STT.start();
+    }
+  });
+}
+
+function waitForSpeechEnd(cb) {
+  const i = setInterval(() => {
+    if (!speechSynthesis.speaking) {
+      clearInterval(i);
+      cb();
+    }
+  }, 120);
+}
+
+// STT → Answer → फिर सुनना
+window.onAnjaliAnswered = function () {
+  if (!conversationActive) return;
+  setTimeout(() => {
+    const status = document.getElementById("appStatus");
+    status.textContent = "मैं सुन रही हूँ…";
+    if (window.STT) STT.start();
+  }, 600);
 };
 
-document.getElementById("adminBtn").onclick = function () {
+// ✅ ONLY ONE BUTTON HANDLER
+document.getElementById("startBtn").onclick = startConversation;
+
+// Admin
+document.getElementById("adminBtn").onclick = () => {
   window.location.href = "admin.html";
 };
 </script>
+<!-- ================= END ================= -->
+
 </body>
 </html>
