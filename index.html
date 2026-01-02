@@ -144,28 +144,41 @@
 
 
 
- <script>
+<!-- ✅ ONLY ONE BUTTON LOGIC (FINAL) -->
+<script>
+let audioReady = false;
+
 document.getElementById("startBtn").onclick = function () {
 
-  document.getElementById("appStatus").textContent =
-    "अंजली बोल रही है…";
+  const status = document.getElementById("appStatus");
+  status.textContent = "अंजली बोल रही है…";
 
-  // 🔊 DIRECT, GUARANTEED VOICE
+  // 🔊 Guaranteed voice (पहले)
   if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
+
+    if (window.TTS && !audioReady) {
+      TTS.init();       // 🔓 mobile audio unlock
+      audioReady = true;
+    }
 
     const utter = new SpeechSynthesisUtterance(
-      "अंजली आपसे संवाद के लिए तैयार है।"
+      "अंजली आपसे संवाद के लिए तैयार है। अब आप बोल सकते हैं।"
     );
     utter.lang = "hi-IN";
-    utter.rate = 1;
-    utter.pitch = 1;
-    utter.volume = 1;
 
+    // 🎤 बोलना खत्म होने पर ही सुनना
+    utter.onend = function () {
+      status.textContent = "मैं सुन रही हूँ… बोलिए";
+      if (window.STT) {
+        STT.start();
+      }
+    };
+
+    window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utter);
+
   } else {
-    document.getElementById("appStatus").textContent =
-      "इस ब्राउज़र में आवाज समर्थित नहीं है";
+    status.textContent = "इस ब्राउज़र में आवाज समर्थित नहीं है";
   }
 };
 
