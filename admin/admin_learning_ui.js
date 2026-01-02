@@ -1,98 +1,42 @@
 /* =========================================================
    admin_learning_ui.js
-   Role: Admin Learning UI (Single Q&A)
-   Status: WORKING (Reverted Stable Version)
+   Role: Learning UI Logic (HTML Modal Based)
    ========================================================= */
 
 (function () {
   "use strict";
 
-  if (!window.KnowledgeBase) {
-    console.error("KnowledgeBase not loaded");
-    return;
-  }
+  if (!window.KnowledgeBase) return;
 
-  // ---------- MODAL ----------
-  const modal = document.createElement("div");
-  modal.id = "learningModal";
-  modal.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.6);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    z-index:99999;
-  `;
-
-  modal.innerHTML = `
-    <div style="
-      width:94%;
-      max-width:520px;
-      background:#1e1e1e;
-      color:#eee;
-      border-radius:18px;
-      padding:16px;
-    ">
-      <h3 style="color:#ffd6d6;margin-bottom:10px;">
-        🧠 सीखने का बॉक्स
-      </h3>
-
-      <textarea id="learnQuestion" placeholder="प्रश्न"
-        style="width:100%;min-height:60px;margin-bottom:8px;"></textarea>
-
-      <textarea id="learnAnswer" placeholder="उत्तर"
-        style="width:100%;min-height:80px;margin-bottom:8px;"></textarea>
-
-      <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"
-        style="width:100%;margin-bottom:10px;">
-
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button id="learnCancel">रद्द</button>
-        <button id="learnSave">सेव करें</button>
-      </div>
-
-      <div id="learnMsg" style="margin-top:8px;font-size:12px;"></div>
-    </div>
-  `;
-
-  document.body.appendChild(modal);
-
-  // ---------- OPEN ----------
+  const modal = document.getElementById("learningModal");
   const openBtn = document.getElementById("learnBtn");
+
   if (openBtn) {
-    openBtn.onclick = function () {
+    openBtn.onclick = () => {
       modal.style.display = "flex";
       document.getElementById("learnMsg").textContent = "";
     };
   }
 
-  // ---------- CLOSE ----------
-  modal.onclick = function (e) {
-    if (e.target === modal) modal.style.display = "none";
-  };
-
-  document.getElementById("learnCancel").onclick = function () {
+  document.getElementById("learnCancel").onclick = () => {
     modal.style.display = "none";
   };
 
-  // ---------- SAVE ----------
-  document.getElementById("learnSave").onclick = async function () {
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  };
+
+  document.getElementById("learnSave").onclick = async () => {
     const msg = document.getElementById("learnMsg");
 
-    const question =
-      document.getElementById("learnQuestion").value.trim();
-    const answer =
-      document.getElementById("learnAnswer").value.trim();
-    const tags =
-      document.getElementById("learnTags").value
-        .split(",")
-        .map(t => t.trim())
-        .filter(Boolean);
+    const question = document.getElementById("learnQuestion").value.trim();
+    const answer = document.getElementById("learnAnswer").value.trim();
+    const tags = document.getElementById("learnTags").value
+      .split(",").map(t => t.trim()).filter(Boolean);
 
     if (!question || !answer) {
       msg.style.color = "red";
-      msg.textContent = "प्रश्न और उत्तर दोनों आवश्यक हैं।";
+      msg.textContent = "प्रश्न और उत्तर आवश्यक हैं।";
       return;
     }
 
@@ -107,10 +51,9 @@
       document.getElementById("learnAnswer").value = "";
       document.getElementById("learnTags").value = "";
 
-    } catch (e) {
+    } catch {
       msg.style.color = "red";
-      msg.textContent = "❌ सेव करने में त्रुटि";
+      msg.textContent = "❌ सेव में त्रुटि";
     }
   };
-
 })();
