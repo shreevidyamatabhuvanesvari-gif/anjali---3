@@ -48,7 +48,6 @@
     .title{
       font-size:22px;
       color:var(--accent);
-      letter-spacing:.4px;
     }
     .badge{
       font-size:12px;
@@ -69,7 +68,6 @@
       margin:0 0 10px;
       font-size:14px;
       color:var(--accentSoft);
-      font-weight:600;
     }
     .info{
       font-size:13px;
@@ -92,13 +90,11 @@
       cursor:pointer;
       background:linear-gradient(180deg,var(--btn),#ff9f9f);
       color:var(--btnText);
-      box-shadow:0 10px 22px rgba(255,179,179,.25);
     }
     .btn.secondary{
       background:#2a2a35;
       color:#f1f1f1;
       border:1px dashed var(--line);
-      box-shadow:none;
     }
     .footer{
       margin-top:8px;
@@ -110,94 +106,66 @@
 </head>
 
 <body>
-  <main class="panel">
+<main class="panel">
 
-    <!-- HEADER -->
-    <div class="header">
-      <div class="title">⚙️ अंजली — Admin Panel</div>
-      <div class="badge">Stage-1 • Stable</div>
+  <div class="header">
+    <div class="title">⚙️ अंजली — Admin Panel</div>
+    <div class="badge">Stage-1 • Stable</div>
+  </div>
+
+  <div class="section">
+    <h3>स्थिति</h3>
+    <div class="info">
+      Admin Panel सक्रिय है। Offline Learning और Voice सुरक्षित हैं।
     </div>
+  </div>
 
-    <!-- STATUS -->
-    <div class="section">
-      <h3>स्थिति</h3>
-      <div class="info">
-        Admin Panel सक्रिय है।  
-        Index, Voice (TTS/STT) और Offline संरचना सुरक्षित है।
-      </div>
+  <div class="section">
+    <h3>प्रबंधन</h3>
+    <div class="row">
+      <button class="btn secondary" id="backBtn">← Index</button>
+      <button class="btn secondary" id="viewLearnBtn">सीखा हुआ देखें</button>
+      <button class="btn secondary" id="bulkBtn">Bulk Learning (1000+)</button>
+
+      <!-- 🔑 यही असली सीखने का बटन है -->
+      <button class="btn" id="learnBtn">🧠 सीखने का बॉक्स</button>
+
+      <!-- अलग ID -->
+      <button class="btn secondary" id="stage2Btn">Learning (Stage-2)</button>
     </div>
+  </div>
 
-    <!-- CONTROLS -->
-    <div class="section">
-      <h3>प्रबंधन</h3>
-      <div class="row">
-        <button class="btn secondary" id="backBtn">
-          ← Index पर लौटें
-        </button>
-        <button class="btn secondary" id="viewLearnBtn">
-  सीखा हुआ देखें
-        </button>
-        <button class="btn secondary" id="bulkBtn">
-  Bulk Learning (1000+)
-        </button>
-        <button class="btn" id="learnBtn">
-  🧠 सीखने का बॉक्स
-</button>
-        <button class="btn" id="learnBtn">
-          Learning (Stage-2)
-        </button>
-      </div>
+  <div class="section">
+    <h3>सूचना</h3>
+    <div class="info">
+      यह Panel अब वास्तविक Learning के लिए तैयार है।
     </div>
+  </div>
 
-    <!-- NOTE -->
-    <div class="section">
-      <h3>सूचना</h3>
-      <div class="info">
-        अभी यह Panel केवल नियंत्रण और संरचना के लिए है।  
-        Learning, प्रश्न-उत्तर और स्मृति अगले चरण में जोड़ी जाएगी।
-      </div>
-    </div>
+  <div class="footer">Admin • Foundation Layer</div>
 
-    <div class="footer">
-      Admin • Foundation Layer
-    </div>
+</main>
 
-  </main>
+<!-- Scripts -->
+<script src="core/AnjaliCore.js"></script>
+<script src="learning/KnowledgeBase.js"></script>
+<script src="learning/ExperienceMemory.js"></script>
 
-  <!-- ================= REQUIRED SCRIPTS (SAFE LOAD) ================= -->
+<script src="admin/admin_learning_ui.js"></script>
+<script src="admin/admin_learning_view.js"></script>
+<script src="admin/admin_bulk_loader.js"></script>
 
-  <!-- Core -->
-  <script src="core/AnjaliCore.js"></script>
+<script src="core/LearningBridge.js"></script>
+<script src="core/AdminControl.js"></script>
 
-  <!-- Learning (अभी उपयोग नहीं, पर तैयार) -->
-  <script src="learning/KnowledgeBase.js"></script>
-  <script src="learning/ExperienceMemory.js"></script>
-  <script src="admin/admin_learning_ui.js"></script>
-  <script src="admin/admin_learning_view.js"></script>
-  <script src="admin/admin_bulk_loader.js"></script>
+<script src="voice/tts.js"></script>
+<script src="voice/stt.js"></script>
 
-  <!-- Bridge / Control -->
-  <script src="core/LearningBridge.js"></script>
-  <script src="core/AdminControl.js"></script>
-
-  <!-- Voice (कोई कॉल नहीं) -->
-  <script src="voice/tts.js"></script>
-  <script src="voice/stt.js"></script>
-
-  <!-- ================= SAFE PAGE LOGIC ================= -->
-  <script>
-    // वापस Index
-    document.getElementById("backBtn").onclick = function () {
-      window.location.href = "index.html";
-    };
-
-    // अगला चरण (placeholder)
-    document.getElementById("learnBtn").onclick = function () {
-      alert(
-        "Stage-2 में Learning UI और Offline ज्ञान जोड़ा जाएगा।\nअभी यह बटन केवल संकेत के लिए है।"
-      );
-    };
-  </script>
+<script>
+  document.getElementById("backBtn").onclick = () => location.href="index.html";
+  document.getElementById("stage2Btn").onclick = () =>
+    alert("Stage-2 बाद में जोड़ा जाएगा");
+</script>
 
 </body>
-  </html>
+</html>
