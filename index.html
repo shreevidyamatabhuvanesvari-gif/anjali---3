@@ -1,95 +1,167 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>अंजली — Admin Panel</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>अंजली</title>
 
-<style>
-body{margin:0;background:#111;color:#eee;font-family:system-ui}
-.panel{max-width:600px;margin:20px auto;background:#1e1e26;padding:18px;border-radius:18px}
-h2{color:#ffb3b3}
-textarea,input{width:100%;margin-top:8px;padding:10px;border-radius:10px;border:1px solid #333;background:#121212;color:#fff}
-button{margin-top:10px;padding:12px;border:none;border-radius:12px;background:#ffb3b3;color:#111;cursor:pointer}
-.hidden{display:none}
-.msg{font-size:13px;margin-top:6px}
-</style>
+  <style>
+    :root{
+      --bg1:#fff3ea;
+      --bg2:#ffe1cf;
+      --accent:#8b2d2d;
+      --soft:#b35c5c;
+      --card:#ffffff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",Arial;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      width:92%;
+      max-width:420px;
+      background:var(--card);
+      border-radius:22px;
+      padding:22px 18px 24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.12);
+      text-align:center;
+    }
+    .avatar{
+      width:96px;
+      height:96px;
+      border-radius:50%;
+      margin:6px auto 12px;
+      overflow:hidden;
+      box-shadow:0 6px 14px rgba(0,0,0,.15);
+    }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+    .title{
+      font-size:26px;
+      color:var(--accent);
+      margin:6px 0 4px;
+    }
+    .subtitle{
+      font-size:14px;
+      color:#555;
+      margin-bottom:16px;
+    }
+    .status{
+      background:#fff7f4;
+      border:1px solid #f3d4c7;
+      border-radius:14px;
+      padding:10px 12px;
+      font-size:13px;
+      color:#6b2c2c;
+      margin:10px 0 16px;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:12px 16px;
+      font-size:14px;
+      cursor:pointer;
+      background:linear-gradient(180deg,#c96a6a,#a13f3f);
+      color:#fff;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:var(--soft);
+      border:1px dashed #e6b2b2;
+    }
+    .footer{
+      margin-top:16px;
+      font-size:11px;
+      color:#777;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="panel">
-<h2>🧠 Single Learning</h2>
+<main class="card">
 
-<textarea id="q">प्रश्न</textarea>
-<textarea id="a">उत्तर</textarea>
-<input id="t" placeholder="टैग (कॉमा से अलग)">
+  <!-- 🌸 AVATAR -->
+  <div class="avatar">
+    <img src="https://i.imgur.com/9XndZ9S.png" alt="Anjali Avatar">
+  </div>
 
-<button onclick="saveSingle()">सेव करें</button>
-<div id="msg1" class="msg"></div>
-</div>
+  <div class="title">अंजली</div>
+  <div class="subtitle">स्नेहपूर्ण • समझदार • मर्यादित</div>
 
-<div class="panel">
-<h2>📦 Bulk Learning (100+)</h2>
+  <div class="status" id="appStatus">
+    अंजली तैयार है
+  </div>
 
-<textarea id="bulk"
-placeholder="Q: प्रश्न
-A: उत्तर
-TAGS: टैग1, टैग2
+  <div class="actions">
+    <button class="btn" id="startBtn">शुरू करें</button>
+    <button class="btn secondary" id="adminBtn">Admin Panel</button>
+  </div>
 
-(हर ब्लॉक के बीच खाली लाइन)">
-</textarea>
+  <div class="footer">
+    Foundation • Stage-1
+  </div>
 
-<button onclick="saveBulk()">Bulk सेव करें</button>
-<div id="msg2" class="msg"></div>
-</div>
+</main>
 
-<!-- Scripts (क्रम बहुत महत्वपूर्ण है) -->
+<!-- ===================================================
+     SCRIPTS (ORDER IS IMPORTANT & FUTURE SAFE)
+     =================================================== -->
+
+<!-- Core -->
+<script src="core/AnjaliCore.js"></script>
+
+<!-- Learning -->
 <script src="learning/KnowledgeBase.js"></script>
+<script src="learning/ExperienceMemory.js"></script>
 
+<!-- Bridge / Control -->
+<script src="core/LearningBridge.js"></script>
+<script src="core/AdminControl.js"></script>
+
+<!-- Voice -->
+<script src="voice/tts.js"></script>
+<script src="voice/stt.js"></script>
+
+<!-- Admin tools (future use from index if needed) -->
+<script src="admin/admin_learning_view.js"></script>
+<script src="admin/admin_bulk_loader.js"></script>
+
+<!-- ===================================================
+     BASIC PAGE LOGIC
+     =================================================== -->
 <script>
-async function saveSingle(){
-  const msg=document.getElementById("msg1");
-  try{
-    await KnowledgeBase.init();
-    await KnowledgeBase.saveOne({
-      question:q.value.trim(),
-      answer:a.value.trim(),
-      tags:t.value.split(",").map(x=>x.trim()).filter(Boolean)
-    });
-    msg.style.color="#9fdf9f";
-    msg.textContent="सफलतापूर्वक सेव हुआ";
-  }catch(e){
-    msg.style.color="#ff9f9f";
-    msg.textContent="सेव नहीं हुआ";
-  }
-}
+  document.getElementById("startBtn").onclick = function () {
+    document.getElementById("appStatus").textContent =
+      "अंजली सुनने के लिए तैयार है…";
 
-async function saveBulk(){
-  const msg=document.getElementById("msg2");
-  try{
-    await KnowledgeBase.init();
-    const blocks=bulk.value.split(/\n\s*\n/);
-    let count=0;
-    for(const b of blocks){
-      const q=b.match(/Q:\s*(.+)/i);
-      const a=b.match(/A:\s*(.+)/i);
-      if(q && a){
-        await KnowledgeBase.saveOne({
-          question:q[1],
-          answer:a[1],
-          tags:[]
-        });
-        count++;
-      }
+    // Voice greeting (safe)
+    if (window.TTS) {
+      try{
+        TTS.init && TTS.init();
+        TTS.speak("नमस्ते। मैं अंजली हूँ।");
+      }catch(e){}
     }
-    msg.style.color="#9fdf9f";
-    msg.textContent=`${count} प्रश्न सेव हुए`;
-  }catch(e){
-    msg.style.color="#ff9f9f";
-    msg.textContent="Bulk सेव विफल";
-  }
-}
+  };
+
+  document.getElementById("adminBtn").onclick = function () {
+    window.location.href = "admin.html";
+  };
 </script>
 
 </body>
