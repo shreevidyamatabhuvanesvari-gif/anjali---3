@@ -1,23 +1,70 @@
-(function () {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    alert("SpeechRecognition supported नहीं है");
+/* =========================================================
+   stt.js
+   Role: Speech To Text (Browser Native, Simple & Stable)
+   Uses: Web Speech API
+   ========================================================= */
+
+(function (window) {
+  "use strict";
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    console.error("SpeechRecognition not supported");
     return;
   }
 
-  const r = new SR();
-  r.lang = "hi-IN";
-  r.continuous = false;
-  r.interimResults = false;
+  const recognition = new SpeechRecognition();
 
-  r.onstart = () => alert("🎤 सुनना शुरू");
-  r.onresult = e => alert("सुना: " + e.results[0][0].transcript);
-  r.onerror = e => alert("STT error: " + e.error);
-  r.onend = () => alert("🛑 सुनना बंद");
+  // 🔑 BASIC SETTINGS (IMPORTANT)
+  recognition.lang = "hi-IN";
+  recognition.continuous = false;     // एक वाक्य, फिर बंद
+  recognition.interimResults = false; // केवल final result
 
-  window.STT = {
+  const STT = {
+
     start() {
-      r.start();
+      try {
+        recognition.start();
+        console.log("🎤 STT started");
+      } catch (e) {
+        console.warn("STT already running");
+      }
+    },
+
+    stop() {
+      recognition.stop();
+      console.log("🛑 STT stopped");
     }
   };
-})();
+
+  // ---------- RESULT ----------
+  recognition.onresult = function (event) {
+    const transcript = event.results[0][0].transcript.trim();
+    console.log("🎧 सुना गया:", transcript);
+
+    // 🔊 बस इतना ही — बोल कर दिखा दो
+    if (window.TTS) {
+      TTS.speak("आपने कहा: " + transcript);
+    }
+  };
+
+  // ---------- ERROR ----------
+  recognition.onerror = function (event) {
+    console.error("STT error:", event.error);
+
+    if (window.TTS) {
+      TTS.speak("माइक्रोफोन में समस्या आ रही है।");
+    }
+  };
+
+  // ---------- END ----------
+  recognition.onend = function () {
+    console.log("🎤 STT ended");
+  };
+
+  // ---------- EXPOSE ----------
+  window.STT = STT;
+
+})(window);
