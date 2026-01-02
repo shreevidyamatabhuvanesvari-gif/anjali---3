@@ -32,9 +32,26 @@
     }
   }
 
-  recognition.onresult = function (event) {
-    active = false;
-    const text = event.results[0][0].transcript.trim();
+  recognition.onresult = async function (event) {
+  const transcript = event.results[0][0].transcript.trim();
+  console.log("👂 Heard:", transcript);
+
+  // 🔊 पुष्टि कि अंजली ने सुना
+  if (window.TTS) {
+    TTS.speak("आपने पूछा: " + transcript);
+  }
+
+  // 🧠 AnswerEngine से उत्तर निकालना
+  if (window.AnswerEngine) {
+    const reply = await AnswerEngine.answer(transcript);
+
+    if (window.TTS) {
+      TTS.speak(reply);
+    }
+  } else if (window.TTS) {
+    TTS.speak("उत्तर प्रणाली उपलब्ध नहीं है।");
+  }
+};
     console.log("👂 Heard:", text);
 
     // अभी सिर्फ सुनने की पुष्टि
