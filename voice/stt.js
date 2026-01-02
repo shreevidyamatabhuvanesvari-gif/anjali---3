@@ -1,70 +1,93 @@
 /* =========================================================
-   stt.js
-   Role: Speech To Text (Browser Native, Simple & Stable)
-   Uses: Web Speech API
+   voice/stt.js
+   Role: Speech To Text (FINAL – Minimal & Stable)
+   Works on: Android Chrome, Samsung Internet
+   Language: Hindi (hi-IN)
    ========================================================= */
 
 (function (window) {
   "use strict";
 
+  // ---------- Browser Support ----------
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    console.error("SpeechRecognition not supported");
+    console.error("STT not supported in this browser");
     return;
   }
 
-  const recognition = new SpeechRecognition();
+  let recognition = null;
+  let listening = false;
 
-  // 🔑 BASIC SETTINGS (IMPORTANT)
-  recognition.lang = "hi-IN";
-  recognition.continuous = false;     // एक वाक्य, फिर बंद
-  recognition.interimResults = false; // केवल final result
-
+  // ---------- STT API ----------
   const STT = {
 
     start() {
-      try {
-        recognition.start();
+      if (listening) return;
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "hi-IN";
+      recognition.continuous = false;     // 🔑 SINGLE QUESTION MODE
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      listening = true;
+
+      recognition.onstart = function () {
         console.log("🎤 STT started");
-      } catch (e) {
-        console.warn("STT already running");
-      }
+      };
+
+      recognition.onresult = function (event) {
+        const transcript =
+          event.results[0][0].transcript.trim();
+
+        console.log("🗣 Heard:", transcript);
+
+        // बोलकर confirm करो
+        if (window.TTS) {
+          TTS.speak("आपने पूछा: " + transcript);
+        }
+
+        // 🔹 यहाँ future में LearningBridge जोड़ा जा सकता है
+        // अभी केवल सुनना + बोलना
+
+      };
+
+      recognition.onerror = function (event) {
+        console.error("STT error:", event.error);
+        listening = false;
+
+        if (window.TTS) {
+          TTS.speak("मुझे स्पष्ट सुनाई नहीं दिया। कृपया फिर से बोलिए।");
+        }
+      };
+
+      recognition.onend = function () {
+        console.log("🛑 STT ended");
+        listening = false;
+      };
+
+      recognition.start();
     },
 
     stop() {
-      recognition.stop();
-      console.log("🛑 STT stopped");
+      if (recognition && listening) {
+        recognition.stop();
+        listening = false;
+      }
+    },
+
+    isListening() {
+      return listening;
     }
   };
 
-  // ---------- RESULT ----------
-  recognition.onresult = function (event) {
-    const transcript = event.results[0][0].transcript.trim();
-    console.log("🎧 सुना गया:", transcript);
-
-    // 🔊 बस इतना ही — बोल कर दिखा दो
-    if (window.TTS) {
-      TTS.speak("आपने कहा: " + transcript);
-    }
-  };
-
-  // ---------- ERROR ----------
-  recognition.onerror = function (event) {
-    console.error("STT error:", event.error);
-
-    if (window.TTS) {
-      TTS.speak("माइक्रोफोन में समस्या आ रही है।");
-    }
-  };
-
-  // ---------- END ----------
-  recognition.onend = function () {
-    console.log("🎤 STT ended");
-  };
-
-  // ---------- EXPOSE ----------
-  window.STT = STT;
+  // ---------- Expose ----------
+  Object.defineProperty(window, "STT", {
+    value: STT,
+    writable: false,
+    configurable: false
+  });
 
 })(window);
