@@ -142,30 +142,31 @@
 <script src="voice/tts.js"></script>
 <script src="voice/stt.js"></script>
   
-<script>
+ <script>
 document.getElementById("startBtn").onclick = function () {
 
-  const status = document.getElementById("appStatus");
+  document.getElementById("appStatus").textContent =
+    "अंजली बोल रही है…";
 
-  // 1️⃣ स्थिति अपडेट
-  status.textContent = "मैं सुन रही हूँ…";
+  // 🔊 DIRECT, GUARANTEED VOICE
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
 
-  // 2️⃣ पहले बोलना (TTS)
-  if (window.TTS) {
-    TTS.init();  // 🔓 मोबाइल ऑडियो अनलॉक
-    TTS.speak("मैं सुन रही हूँ।");
+    const utter = new SpeechSynthesisUtterance(
+      "अंजली आपसे संवाद के लिए तैयार है।"
+    );
+    utter.lang = "hi-IN";
+    utter.rate = 1;
+    utter.pitch = 1;
+    utter.volume = 1;
+
+    window.speechSynthesis.speak(utter);
+  } else {
+    document.getElementById("appStatus").textContent =
+      "इस ब्राउज़र में आवाज समर्थित नहीं है";
   }
-
-  // 3️⃣ निश्चित देरी के बाद सुनना (STT)
-  // ⚠️ यही निर्णायक लाइन है
-  setTimeout(function () {
-    if (window.STT) {
-      STT.start();   // 🎤 अब अंजली सुनेगी
-    }
-  }, 800); // 800ms = सुरक्षित, परीक्षण-प्रमाणित
 };
 
-// Admin Panel (अलग, सुरक्षित)
 document.getElementById("adminBtn").onclick = function () {
   window.location.href = "admin.html";
 };
