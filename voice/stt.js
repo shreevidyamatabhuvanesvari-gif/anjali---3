@@ -36,29 +36,30 @@
   const transcript = event.results[0][0].transcript.trim();
   console.log("👂 Heard:", transcript);
 
-  // 🔊 पुष्टि कि अंजली ने सुना
-  if (window.TTS) {
-    TTS.speak("आपने पूछा: " + transcript);
+  // 🔍 अगर AnswerEngine उपलब्ध नहीं है
+  if (!window.AnswerEngine) {
+    if (window.TTS) {
+      TTS.speak("उत्तर प्रणाली उपलब्ध नहीं है।");
+    }
+    return;
   }
 
-  // 🧠 AnswerEngine से उत्तर निकालना
-  if (window.AnswerEngine) {
+  try {
+    // 🧠 ज्ञान से उत्तर निकालो
     const reply = await AnswerEngine.answer(transcript);
 
+    // 🔊 केवल उत्तर बोलो (echo नहीं)
     if (window.TTS) {
       TTS.speak(reply);
     }
-  } else if (window.TTS) {
-    TTS.speak("उत्तर प्रणाली उपलब्ध नहीं है।");
+
+  } catch (e) {
+    console.error(e);
+    if (window.TTS) {
+      TTS.speak("उत्तर देने में त्रुटि हुई।");
+    }
   }
 };
-    console.log("👂 Heard:", text);
-
-    // अभी सिर्फ सुनने की पुष्टि
-    if (window.TTS) {
-      TTS.speak("आपने कहा: " + text);
-    }
-  };
 
   recognition.onend = function () {
     active = false;
