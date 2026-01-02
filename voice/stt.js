@@ -1,93 +1,128 @@
 /* =========================================================
    voice/stt.js
-   Role: Speech To Text (FINAL – Minimal & Stable)
-   Works on: Android Chrome, Samsung Internet
-   Language: Hindi (hi-IN)
+   Role: Speech To Text (LISTENING ENABLED + AUTO RESTART)
+   FINAL – Cross-Verified
    ========================================================= */
 
 (function (window) {
   "use strict";
 
-  // ---------- Browser Support ----------
+  // ---------- SUPPORT CHECK ----------
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
-    console.error("STT not supported in this browser");
+    console.error("❌ SpeechRecognition not supported");
     return;
   }
 
-  let recognition = null;
+  const recognition = new SpeechRecognition();
+
+  // ---------- CONFIG ----------
+  recognition.lang = "hi-IN";
+  recognition.interimResults = false;
+  recognition.continuous = false; 
+  // ⚠️ Chrome में true unstable है, इसलिए auto-restart logic यूज़ कर रहे हैं
+
   let listening = false;
+  let manualStop = false;
 
-  // ---------- STT API ----------
-  const STT = {
+  // ---------- START ----------
+  function start() {
+    if (listening) return;
 
-    start() {
-      if (listening) return;
+    manualStop = false;
 
-      recognition = new SpeechRecognition();
-      recognition.lang = "hi-IN";
-      recognition.continuous = false;     // 🔑 SINGLE QUESTION MODE
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      listening = true;
-
-      recognition.onstart = function () {
-        console.log("🎤 STT started");
-      };
-
-      recognition.onresult = function (event) {
-        const transcript =
-          event.results[0][0].transcript.trim();
-
-        console.log("🗣 Heard:", transcript);
-
-        // बोलकर confirm करो
-        if (window.TTS) {
-          TTS.speak("आपने पूछा: " + transcript);
-        }
-
-        // 🔹 यहाँ future में LearningBridge जोड़ा जा सकता है
-        // अभी केवल सुनना + बोलना
-
-      };
-
-      recognition.onerror = function (event) {
-        console.error("STT error:", event.error);
-        listening = false;
-
-        if (window.TTS) {
-          TTS.speak("मुझे स्पष्ट सुनाई नहीं दिया। कृपया फिर से बोलिए।");
-        }
-      };
-
-      recognition.onend = function () {
-        console.log("🛑 STT ended");
-        listening = false;
-      };
-
+    try {
       recognition.start();
-    },
+      listening = true;
+      console.log("🎤 STT STARTED – Listening...");
+    } catch (e) {
+      console.error("STT start error", e);
+    }
+  }
 
-    stop() {
-      if (recognition && listening) {
-        recognition.stop();
-        listening = false;
+  // ---------- STOP (अगर भविष्य में चाहिए) ----------
+  function stop() {
+    manualStop = true;
+    try {
+      recognition.stop();
+    } catch (e) {}
+    listening = false;
+  }
+
+  // ---------- RESULT ----------
+  recognition.onresult = async function (event) {
+    listening = false;
+
+    const transcript =
+      event.results[0][0].transcript.trim();
+
+    console.log("👂 Heard:", transcript);
+
+    // 🔊 बोलकर पुष्टि
+    if (window.TTS) {
+      TTS.speak("आपने पूछा: " + transcript);
+    }
+
+    // ---------- ANSWER FROM KNOWLEDGE ----------
+    if (!window.KnowledgeBase) {
+      TTS && TTS.speak("ज्ञान प्रणाली उपलब्ध नहीं है।");
+      return;
+    }
+
+    try {
+      await KnowledgeBase.init();
+      const all = await KnowledgeBase.getAll();
+
+      const found = all.find(k =>
+        transcript.includes(k.question) ||
+        k.question.includes(transcript)
+      );
+
+      if (found) {
+        TTS && TTS.speak(found.answer);
+      } else {
+        TTS && TTS.speak("इस प्रश्न का उत्तर अभी मेरे ज्ञान में नहीं है।");
       }
-    },
 
-    isListening() {
-      return listening;
+    } catch (e) {
+      console.error(e);
+      TTS && TTS.speak("उत्तर खोजने में त्रुटि हुई।");
     }
   };
 
-  // ---------- Expose ----------
-  Object.defineProperty(window, "STT", {
-    value: STT,
-    writable: false,
-    configurable: false
-  });
+  // ---------- AUTO RESTART (यही सुनने की शक्ति है) ----------
+  recognition.onend = function () {
+    listening = false;
+    console.log("🎤 STT ended");
+
+    // 👇 जब तक यूज़र ने रोका नहीं, फिर से सुनो
+    if (!manualStop) {
+      setTimeout(() => {
+        try {
+          recognition.start();
+          listening = true;
+          console.log("🔁 STT restarted – Listening again");
+        } catch (e) {}
+      }, 400);
+    }
+  };
+
+  // ---------- ERROR ----------
+  recognition.onerror = function (e) {
+    listening = false;
+    console.error("STT error:", e);
+
+    if (window.TTS) {
+      TTS.speak("माइक से सुनने में समस्या आ रही है।");
+    }
+  };
+
+  // ---------- EXPOSE ----------
+  window.STT = {
+    start,
+    stop
+  };
 
 })(window);
