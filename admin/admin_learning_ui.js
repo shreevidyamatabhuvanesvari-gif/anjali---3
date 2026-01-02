@@ -1,20 +1,18 @@
 /* =========================================================
    admin_learning_ui.js
    Role: Admin Learning UI (Single Q&A)
-   Stage: 2 (Stable, Offline-Safe)
+   Status: WORKING (Reverted Stable Version)
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
   "use strict";
 
-  alert("admin_learning_ui.js READY"); // 🔍 आप चाहें तो बाद में हटा सकते हैं
-
   if (!window.KnowledgeBase) {
-    alert("KnowledgeBase NOT loaded");
+    console.error("KnowledgeBase not loaded");
     return;
   }
 
-  // ---------- CREATE MODAL ----------
+  // ---------- MODAL ----------
   const modal = document.createElement("div");
   modal.id = "learningModal";
   modal.style.cssText = `
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:10000;
+    z-index:99999;
   `;
 
   modal.innerHTML = `
@@ -35,10 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
       color:#eee;
       border-radius:18px;
       padding:16px;
-      box-shadow:0 20px 44px rgba(0,0,0,.65)
     ">
-      <h3 style="margin:0 0 10px;color:#ffd6d6;">
-        🧠 अंजली को सिखाएँ
+      <h3 style="color:#ffd6d6;margin-bottom:10px;">
+        🧠 सीखने का बॉक्स
       </h3>
 
       <textarea id="learnQuestion" placeholder="प्रश्न"
@@ -61,23 +58,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.appendChild(modal);
 
-  // ---------- OPEN BUTTON ----------
+  // ---------- OPEN ----------
   const openBtn = document.getElementById("learnBtn");
-
-  if (!openBtn) {
-    alert("❌ learnBtn नहीं मिला (ID mismatch)");
-    return;
+  if (openBtn) {
+    openBtn.onclick = function () {
+      modal.style.display = "flex";
+      document.getElementById("learnMsg").textContent = "";
+    };
   }
 
-  openBtn.addEventListener("click", function () {
-    modal.style.display = "flex";
-    document.getElementById("learnMsg").textContent = "";
-  });
-
   // ---------- CLOSE ----------
-  modal.addEventListener("click", function (e) {
+  modal.onclick = function (e) {
     if (e.target === modal) modal.style.display = "none";
-  });
+  };
 
   document.getElementById("learnCancel").onclick = function () {
     modal.style.display = "none";
@@ -87,12 +80,15 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("learnSave").onclick = async function () {
     const msg = document.getElementById("learnMsg");
 
-    const question = document.getElementById("learnQuestion").value.trim();
-    const answer = document.getElementById("learnAnswer").value.trim();
-    const tags = document.getElementById("learnTags").value
-      .split(",")
-      .map(t => t.trim())
-      .filter(Boolean);
+    const question =
+      document.getElementById("learnQuestion").value.trim();
+    const answer =
+      document.getElementById("learnAnswer").value.trim();
+    const tags =
+      document.getElementById("learnTags").value
+        .split(",")
+        .map(t => t.trim())
+        .filter(Boolean);
 
     if (!question || !answer) {
       msg.style.color = "red";
@@ -105,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
       await KnowledgeBase.saveOne({ question, answer, tags });
 
       msg.style.color = "lightgreen";
-      msg.textContent = "✅ प्रश्न–उत्तर सेव हो गया";
+      msg.textContent = "✅ सफलतापूर्वक सेव हुआ";
 
       document.getElementById("learnQuestion").value = "";
       document.getElementById("learnAnswer").value = "";
@@ -114,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (e) {
       msg.style.color = "red";
       msg.textContent = "❌ सेव करने में त्रुटि";
-      console.error(e);
     }
   };
-});
+
+})();
