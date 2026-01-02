@@ -1,7 +1,6 @@
 /* =========================================================
-   tts.js
-   Role: Text To Speech (FINAL, STABLE)
-   Works: Android Chrome, Samsung Internet
+   voice/tts.js
+   Role: Stable, Soft, Human-like Hindi TTS (OFFLINE)
    ========================================================= */
 
 (function (window, document) {
@@ -14,7 +13,6 @@
 
   let unlocked = false;
 
-  // 🔓 Mobile audio unlock (MANDATORY)
   function unlockAudio() {
     if (unlocked) return;
     const u = new SpeechSynthesisUtterance(" ");
@@ -23,23 +21,31 @@
     unlocked = true;
   }
 
-  // User gesture unlock
   document.addEventListener("click", unlockAudio, { once: true });
   document.addEventListener("touchstart", unlockAudio, { once: true });
 
   const TTS = {
+    init() {
+      unlockAudio();
+    },
+
     speak(text) {
       if (!text) return;
+
       unlockAudio();
       window.speechSynthesis.cancel();
 
       const u = new SpeechSynthesisUtterance(text);
-      u.lang = "hi-IN";
-      u.rate = 1;
-      u.pitch = 1;
+      u.lang   = "hi-IN";
+      u.rate   = 0.85;   // 🧠 human-like speed
+      u.pitch  = 1.15;   // 🌸 soft feminine tone
       u.volume = 1;
 
       window.speechSynthesis.speak(u);
+    },
+
+    stop() {
+      window.speechSynthesis.cancel();
     }
   };
 
