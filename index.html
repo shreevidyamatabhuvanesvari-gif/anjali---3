@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>अंजली</title>
+
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", Arial, sans-serif;
+      background: linear-gradient(135deg,#fff3ea,#ffe1cf);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      width:92%;
+      max-width:420px;
+      background:#fff;
+      border-radius:22px;
+      padding:22px 18px 24px;
+      box-shadow:0 14px 30px rgba(0,0,0,.12);
+      text-align:center;
+    }
+    .avatar{
+      width:84px;
+      height:84px;
+      border-radius:50%;
+      margin:6px auto 10px;
+      background:#f3b3b3;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+    }
+    .title{
+      font-size:26px;
+      color:#8b2d2d;
+    }
+    .status{
+      margin:12px 0;
+      padding:10px;
+      border-radius:14px;
+      background:#fff7f4;
+      font-size:14px;
+      color:#6b2c2c;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:none;
+      border-radius:16px;
+      padding:12px 18px;
+      font-size:14px;
+      cursor:pointer;
+      background:#a13f3f;
+      color:#fff;
+    }
+    .btn.secondary{
+      background:#fff;
+      color:#a13f3f;
+      border:1px dashed #e6b2b2;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="avatar">🌸</div>
+
+    <div class="title">अंजली</div>
+
+    <div class="status" id="status">
+      अंजली तैयार है
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="startBtn">शुरू करें</button>
+      <button class="btn secondary" id="adminBtn">Admin Panel</button>
+    </div>
+  </main>
+
+  <!-- ================= CORE ================= -->
+  <script src="core/AnjaliCore.js"></script>
+  <script src="core/LearningBridge.js"></script>
+  <script src="core/AdminControl.js"></script>
+
+  <!-- ================= LEARNING ================= -->
+  <script src="learning/KnowledgeBase.js"></script>
+  <script src="learning/ExperienceMemory.js"></script>
+
+  <!-- ================= VOICE ================= -->
+  <script src="voice/tts.js"></script>
+  <script src="voice/stt.js"></script>
+
+  <!-- ================= PAGE LOGIC (SAFE) ================= -->
+  <script>
+    // Voice test only (SAFE)
+    document.getElementById("startBtn").addEventListener("click", function () {
+      document.getElementById("status").textContent =
+        "अंजली बोल रही है…";
+
+      if (window.TTS) {
+        TTS.speak("नमस्ते। मैं अंजली हूँ।");
+      }
+    });
+
+    // Admin navigation only
+    document.getElementById("adminBtn").addEventListener("click", function () {
+      window.location.href = "admin.html";
+    });
+  </script>
+</body>
+</html>
