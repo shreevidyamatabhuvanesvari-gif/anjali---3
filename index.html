@@ -159,21 +159,6 @@ document.getElementById("startBtn").onclick = function () {
   }
 
 };
-</script>
 
-  <!-- ========= BASIC LOGIC ========= -->
-  <script>
-    document.getElementById("startBtn").onclick = function(){
-      document.getElementById("appStatus").textContent =
-        "संवाद प्रारंभ";
-      if (window.TTS) {
-        TTS.speak("अंजली आपसे संवाद के लिए तैयार है।");
-      }
-    };
-
-    document.getElementById("adminBtn").onclick = function(){
-      window.location.href = "admin.html";
-    };
-  </script>
 </body>
 </html>
