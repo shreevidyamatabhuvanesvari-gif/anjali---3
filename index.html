@@ -146,14 +146,13 @@
 
 <script>
 let audioReady = false;
-let listeningLock = false;
 
 document.getElementById("startBtn").onclick = function () {
 
   const status = document.getElementById("appStatus");
   status.textContent = "अंजली तैयार है";
 
-  // 🔓 audio unlock (एक बार)
+  // 🔓 Audio unlock (एक बार)
   if (window.TTS && !audioReady) {
     TTS.init();
     audioReady = true;
@@ -164,21 +163,20 @@ document.getElementById("startBtn").onclick = function () {
     return;
   }
 
-  // 🔊 पहले अंजली बोले
-  TTS.speak("अब आप प्रश्न बोल सकते हैं।");
+  // 🔊 अंजली बोले
+  const utter = new SpeechSynthesisUtterance("अब आप प्रश्न बोल सकते हैं।");
+  utter.lang = "hi-IN";
 
-  // ⚠️ TTS खत्म होने का reliable तरीका (polling)
-  const waitForSpeechEnd = setInterval(() => {
-    if (!window.speechSynthesis.speaking) {
-      clearInterval(waitForSpeechEnd);
-
-      if (!listeningLock && window.STT) {
-        listeningLock = true;
-        status.textContent = "मैं सुन रही हूँ…";
-        STT.start();
-      }
+  utter.onend = function () {
+    // ✅ केवल TTS पूरी तरह खत्म होने के बाद
+    status.textContent = "मैं सुन रही हूँ…";
+    if (window.STT) {
+      STT.start();
     }
-  }, 150);
+  };
+
+  window.speechSynthesis.cancel(); // safety
+  window.speechSynthesis.speak(utter);
 };
 </script>
 </body>
