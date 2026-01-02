@@ -161,6 +161,97 @@ async function saveBulk(){
   }
 }
 </script>
+  <!-- ================= SINGLE LEARNING BOX ================= -->
+<div style="
+  max-width:600px;
+  margin:20px auto;
+  background:#1e1e26;
+  padding:18px;
+  border-radius:18px;
+  color:#eee;
+">
+
+  <h2 style="color:#ffb3b3;">🧠 अंजली को सिखाएँ (Single Q&A)</h2>
+
+  <textarea id="qInput"
+    placeholder="प्रश्न लिखें"
+    style="width:100%;min-height:60px;margin-top:8px;
+    padding:10px;border-radius:10px;border:1px solid #333;
+    background:#121212;color:#fff;">
+  </textarea>
+
+  <textarea id="aInput"
+    placeholder="उत्तर लिखें"
+    style="width:100%;min-height:90px;margin-top:8px;
+    padding:10px;border-radius:10px;border:1px solid #333;
+    background:#121212;color:#fff;">
+  </textarea>
+
+  <input id="tInput"
+    placeholder="टैग (कॉमा से अलग करें)"
+    style="width:100%;margin-top:8px;
+    padding:10px;border-radius:10px;border:1px solid #333;
+    background:#121212;color:#fff;"
+  />
+
+  <button onclick="saveQA()"
+    style="
+      margin-top:12px;
+      padding:12px;
+      width:100%;
+      border:none;
+      border-radius:12px;
+      background:#ffb3b3;
+      color:#111;
+      font-size:15px;
+      cursor:pointer;
+    ">
+    सेव करें
+  </button>
+
+  <div id="msg"
+    style="margin-top:10px;font-size:13px;">
+  </div>
+</div>
+
+<script>
+async function saveQA(){
+  const msg = document.getElementById("msg");
+  const q = document.getElementById("qInput").value.trim();
+  const a = document.getElementById("aInput").value.trim();
+  const t = document.getElementById("tInput").value
+              .split(",")
+              .map(x => x.trim())
+              .filter(Boolean);
+
+  if (!q || !a) {
+    msg.style.color = "#ff9f9f";
+    msg.textContent = "❌ प्रश्न और उत्तर दोनों आवश्यक हैं।";
+    return;
+  }
+
+  try {
+    await KnowledgeBase.init();
+    await KnowledgeBase.saveOne({
+      question: q,
+      answer: a,
+      tags: t
+    });
+
+    msg.style.color = "#9fdf9f";
+    msg.textContent = "✅ प्रश्न–उत्तर सफलतापूर्वक सेव हो गया।";
+
+    // साफ करें
+    document.getElementById("qInput").value = "";
+    document.getElementById("aInput").value = "";
+    document.getElementById("tInput").value = "";
+
+  } catch (e) {
+    msg.style.color = "#ff9f9f";
+    msg.textContent = "❌ सेव करने में समस्या आई।";
+  }
+}
+    </script>
 
 </body>
 </html>
