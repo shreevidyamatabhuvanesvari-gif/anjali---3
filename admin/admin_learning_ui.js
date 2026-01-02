@@ -5,7 +5,7 @@
    Depends on: KnowledgeBase.js
    ========================================================= */
 
-(function () {
+document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
   if (!window.KnowledgeBase) {
@@ -41,71 +41,40 @@
       </h3>
 
       <div style="display:grid;gap:8px;">
-        <textarea id="learnQuestion"
-          placeholder="प्रश्न लिखें"
-          style="
-            min-height:70px;
-            padding:10px;
-            border-radius:10px;
-            border:1px solid #333;
-            background:#121212;
-            color:#eee;
-          "></textarea>
+        <textarea id="learnQuestion" placeholder="प्रश्न लिखें"
+          style="min-height:70px;padding:10px;border-radius:10px;
+          border:1px solid #333;background:#121212;color:#eee;"></textarea>
 
-        <textarea id="learnAnswer"
-          placeholder="उत्तर लिखें"
-          style="
-            min-height:90px;
-            padding:10px;
-            border-radius:10px;
-            border:1px solid #333;
-            background:#121212;
-            color:#eee;
-          "></textarea>
+        <textarea id="learnAnswer" placeholder="उत्तर लिखें"
+          style="min-height:90px;padding:10px;border-radius:10px;
+          border:1px solid #333;background:#121212;color:#eee;"></textarea>
 
-        <input id="learnTags"
-          placeholder="टैग (कॉमा से अलग करें)"
-          style="
-            padding:10px;
-            border-radius:10px;
-            border:1px solid #333;
-            background:#121212;
-            color:#eee;
-          ">
+        <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"
+          style="padding:10px;border-radius:10px;
+          border:1px solid #333;background:#121212;color:#eee;">
       </div>
 
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
         <button id="learnCancel"
-          style="
-            padding:10px 14px;
-            border-radius:12px;
-            background:#2a2a2a;
-            color:#eee;
-            border:1px solid #333;
-          ">
+          style="padding:10px 14px;border-radius:12px;
+          background:#2a2a2a;color:#eee;border:1px solid #333;">
           रद्द
         </button>
         <button id="learnSave"
-          style="
-            padding:10px 14px;
-            border-radius:12px;
-            background:linear-gradient(180deg,#ffd6d6,#ffb3b3);
-            color:#1b1b1b;
-            border:none;
-          ">
+          style="padding:10px 14px;border-radius:12px;
+          background:linear-gradient(180deg,#ffd6d6,#ffb3b3);
+          color:#1b1b1b;border:none;">
           सेव करें
         </button>
       </div>
 
-      <div id="learnMsg"
-        style="margin-top:8px;font-size:12px;">
-      </div>
+      <div id="learnMsg" style="margin-top:8px;font-size:12px;"></div>
     </div>
   `;
 
   document.body.appendChild(modal);
 
-  // ---------- OPEN BUTTON (Admin.html में मौजूद) ----------
+  // ---------- OPEN BUTTON ----------
   const openBtn = document.getElementById("learnBtn");
   if (openBtn) {
     openBtn.onclick = function () {
@@ -127,15 +96,10 @@
   document.getElementById("learnSave").onclick = async function () {
     const msg = document.getElementById("learnMsg");
 
-    const question =
-      document.getElementById("learnQuestion").value.trim();
-    const answer =
-      document.getElementById("learnAnswer").value.trim();
-    const tags =
-      document.getElementById("learnTags").value
-        .split(",")
-        .map(t => t.trim())
-        .filter(Boolean);
+    const question = document.getElementById("learnQuestion").value.trim();
+    const answer = document.getElementById("learnAnswer").value.trim();
+    const tags = document.getElementById("learnTags").value
+      .split(",").map(t => t.trim()).filter(Boolean);
 
     if (!question || !answer) {
       msg.style.color = "#ff9f9f";
@@ -145,16 +109,11 @@
 
     try {
       await KnowledgeBase.init();
-      await KnowledgeBase.saveOne({
-        question,
-        answer,
-        tags
-      });
+      await KnowledgeBase.saveOne({ question, answer, tags });
 
       msg.style.color = "#9fdf9f";
       msg.textContent = "प्रश्न–उत्तर सफलतापूर्वक सुरक्षित किया गया।";
 
-      // साफ़ करें
       document.getElementById("learnQuestion").value = "";
       document.getElementById("learnAnswer").value = "";
       document.getElementById("learnTags").value = "";
@@ -166,4 +125,4 @@
     }
   };
 
-})();
+});
