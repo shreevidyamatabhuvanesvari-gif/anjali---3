@@ -3,6 +3,7 @@
    Role: Admin Learning UI (Single Q&A)
    GUARANTEED WORKING VERSION
    ========================================================= */
+alert("admin_learning_ui.js LOADED");
 
 document.addEventListener("DOMContentLoaded", function () {
   "use strict";
