@@ -1,15 +1,16 @@
 /* =========================================================
    admin_learning_ui.js
    Role: Admin Learning UI (Single Q&A)
-   GUARANTEED WORKING VERSION
+   Stage: 2 (Stable, Offline-Safe)
    ========================================================= */
-alert("admin_learning_ui.js LOADED");
 
 document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
+  alert("admin_learning_ui.js READY"); // 🔍 आप चाहें तो बाद में हटा सकते हैं
+
   if (!window.KnowledgeBase) {
-    alert("KnowledgeBase लोड नहीं हुआ");
+    alert("KnowledgeBase NOT loaded");
     return;
   }
 
@@ -23,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:99999;
+    z-index:10000;
   `;
 
   modal.innerHTML = `
@@ -40,33 +41,18 @@ document.addEventListener("DOMContentLoaded", function () {
         🧠 अंजली को सिखाएँ
       </h3>
 
-      <textarea id="learnQuestion"
-        placeholder="प्रश्न लिखें"
-        style="width:100%;min-height:70px;margin-bottom:8px;
-        padding:10px;border-radius:10px;background:#121212;color:#eee;border:1px solid #333"></textarea>
+      <textarea id="learnQuestion" placeholder="प्रश्न"
+        style="width:100%;min-height:60px;margin-bottom:8px;"></textarea>
 
-      <textarea id="learnAnswer"
-        placeholder="उत्तर लिखें"
-        style="width:100%;min-height:90px;margin-bottom:8px;
-        padding:10px;border-radius:10px;background:#121212;color:#eee;border:1px solid #333"></textarea>
+      <textarea id="learnAnswer" placeholder="उत्तर"
+        style="width:100%;min-height:80px;margin-bottom:8px;"></textarea>
 
-      <input id="learnTags"
-        placeholder="टैग (कॉमा से अलग करें)"
-        style="width:100%;padding:10px;border-radius:10px;
-        background:#121212;color:#eee;border:1px solid #333">
+      <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"
+        style="width:100%;margin-bottom:10px;">
 
-      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
-        <button id="learnCancel"
-          style="padding:10px 14px;border-radius:12px;
-          background:#2a2a2a;color:#eee;border:1px solid #333">
-          रद्द
-        </button>
-        <button id="learnSave"
-          style="padding:10px 14px;border-radius:12px;
-          background:linear-gradient(180deg,#ffd6d6,#ffb3b3);
-          color:#1b1b1b;border:none">
-          सेव करें
-        </button>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button id="learnCancel">रद्द</button>
+        <button id="learnSave">सेव करें</button>
       </div>
 
       <div id="learnMsg" style="margin-top:8px;font-size:12px;"></div>
@@ -75,10 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.appendChild(modal);
 
-  // ---------- OPEN BUTTON (GUARANTEED) ----------
+  // ---------- OPEN BUTTON ----------
   const openBtn = document.getElementById("learnBtn");
+
   if (!openBtn) {
-    alert("learnBtn नहीं मिला (HTML जाँचें)");
+    alert("❌ learnBtn नहीं मिला (ID mismatch)");
     return;
   }
 
@@ -103,10 +90,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const question = document.getElementById("learnQuestion").value.trim();
     const answer = document.getElementById("learnAnswer").value.trim();
     const tags = document.getElementById("learnTags").value
-      .split(",").map(t => t.trim()).filter(Boolean);
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
 
     if (!question || !answer) {
-      msg.style.color = "#ff9f9f";
+      msg.style.color = "red";
       msg.textContent = "प्रश्न और उत्तर दोनों आवश्यक हैं।";
       return;
     }
@@ -115,17 +104,17 @@ document.addEventListener("DOMContentLoaded", function () {
       await KnowledgeBase.init();
       await KnowledgeBase.saveOne({ question, answer, tags });
 
-      msg.style.color = "#9fdf9f";
-      msg.textContent = "✔️ प्रश्न–उत्तर सुरक्षित हो गया";
+      msg.style.color = "lightgreen";
+      msg.textContent = "✅ प्रश्न–उत्तर सेव हो गया";
 
       document.getElementById("learnQuestion").value = "";
       document.getElementById("learnAnswer").value = "";
       document.getElementById("learnTags").value = "";
 
     } catch (e) {
-      msg.style.color = "#ff9f9f";
-      msg.textContent = "❌ सेव में त्रुटि";
+      msg.style.color = "red";
+      msg.textContent = "❌ सेव करने में त्रुटि";
+      console.error(e);
     }
   };
-
 });
