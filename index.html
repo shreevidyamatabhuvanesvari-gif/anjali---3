@@ -142,13 +142,12 @@
 <script src="voice/tts.js"></script>
 <script src="voice/stt.js"></script>
   
- <script>
+<script>
 document.getElementById("startBtn").onclick = function () {
 
   document.getElementById("appStatus").textContent =
     "अंजली बोल रही है…";
 
-  // 🔊 DIRECT, GUARANTEED VOICE
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
 
@@ -156,14 +155,17 @@ document.getElementById("startBtn").onclick = function () {
       "अंजली आपसे संवाद के लिए तैयार है।"
     );
     utter.lang = "hi-IN";
-    utter.rate = 1;
-    utter.pitch = 1;
-    utter.volume = 1;
+
+    // ✅ यही एकमात्र लाइन है जो सुनने को trigger करेगी
+    utter.onend = function () {
+      document.getElementById("appStatus").textContent =
+        "मैं सुन रही हूँ…";
+      if (window.STT) {
+        STT.start();
+      }
+    };
 
     window.speechSynthesis.speak(utter);
-  } else {
-    document.getElementById("appStatus").textContent =
-      "इस ब्राउज़र में आवाज समर्थित नहीं है";
   }
 };
 
