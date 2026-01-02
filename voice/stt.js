@@ -1,6 +1,7 @@
 /* =========================================================
    voice/stt.js
-   Role: Speech To Text (FINAL • SAFE • ISOLATED)
+   Role: Speech To Text + Answer + Safe Conversation Loop
+   FINAL • SAFE • ISOLATED
    ========================================================= */
 
 (function (window) {
@@ -21,6 +22,7 @@
 
   let active = false;
 
+  // ▶️ Start listening
   function start() {
     if (active) return;
     try {
@@ -28,48 +30,53 @@
       active = true;
       console.log("🎤 Listening started");
     } catch (e) {
-      console.error(e);
+      console.error("STT start error:", e);
     }
   }
 
+  // ▶️ जब यूज़र बोल चुका हो
   recognition.onresult = async function (event) {
-  const transcript = event.results[0][0].transcript.trim();
-  console.log("👂 Heard:", transcript);
+    active = false;
 
-  // 🔍 अगर AnswerEngine उपलब्ध नहीं है
-  if (!window.AnswerEngine) {
-    if (window.TTS) {
-      TTS.speak("उत्तर प्रणाली उपलब्ध नहीं है।");
+    const transcript = event.results[0][0].transcript.trim();
+    console.log("👂 Heard:", transcript);
+
+    // 🧠 Default fallback
+    let reply = "इस प्रश्न का उत्तर मेरे ज्ञान में नहीं है।";
+
+    try {
+      if (window.AnswerEngine) {
+        reply = await AnswerEngine.answer(transcript);
+      }
+    } catch (e) {
+      console.error("AnswerEngine error:", e);
+      reply = "उत्तर देने में त्रुटि हुई।";
     }
-    return;
-  }
 
-  try {
-    // 🧠 ज्ञान से उत्तर निकालो
-    const reply = await AnswerEngine.answer(transcript);
-
-    // 🔊 केवल उत्तर बोलो (echo नहीं)
+    // 🔊 उत्तर बोलो
     if (window.TTS) {
       TTS.speak(reply);
     }
 
-  } catch (e) {
-    console.error(e);
-    if (window.TTS) {
-      TTS.speak("उत्तर देने में त्रुटि हुई।");
+    // 🔁 Safe Conversation Loop को signal
+    if (window.onAnjaliAnswered) {
+      window.onAnjaliAnswered();
     }
-  }
-};
+  };
 
   recognition.onend = function () {
     active = false;
     console.log("🎤 Listening ended");
   };
 
-  recognition.onerror = function () {
+  recognition.onerror = function (e) {
     active = false;
+    console.error("STT error:", e);
   };
 
-  window.STT = { start };
+  // ▶️ Expose STT API
+  window.STT = {
+    start
+  };
 
 })(window);
