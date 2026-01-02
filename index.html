@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>अंजली</title>
 
-  <!-- ✅ PWA SUPPORT (यहीं जोड़ना सही है) -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#8b2d2d">
-
   <style>
     :root{
       --bg1:#fff3ea;
@@ -98,8 +94,8 @@
 </head>
 
 <body>
-
 <main class="card">
+
   <div class="avatar">
     <img src="avatar.png" alt="Anjali Avatar">
   </div>
@@ -117,7 +113,7 @@
   <div class="footer">Foundation • Stage-1</div>
 </main>
 
-<!-- ===== CORE ===== -->
+<!-- ===== CORE SYSTEM ===== -->
 <script src="core/AnjaliCore.js"></script>
 
 <!-- ===== LEARNING ===== -->
@@ -125,7 +121,7 @@
 <script src="core/AnswerEngine.js"></script>
 <script src="learning/ExperienceMemory.js"></script>
 
-<!-- ===== CONTROL ===== -->
+<!-- ===== BRIDGE / CONTROL ===== -->
 <script src="core/LearningBridge.js"></script>
 <script src="core/AdminControl.js"></script>
 
@@ -133,7 +129,7 @@
 <script src="voice/tts.js"></script>
 <script src="voice/stt.js"></script>
 
-<!-- ===== SAFE CONVERSATION LOOP ===== -->
+<!-- ================= SAFE CONVERSATION LOOP ================= -->
 <script>
 let audioUnlocked = false;
 let conversationActive = false;
@@ -168,20 +164,25 @@ function waitForSpeechEnd(cb) {
   }, 120);
 }
 
+// STT → Answer → फिर सुनना
 window.onAnjaliAnswered = function () {
   if (!conversationActive) return;
   setTimeout(() => {
-    document.getElementById("appStatus").textContent = "मैं सुन रही हूँ…";
+    const status = document.getElementById("appStatus");
+    status.textContent = "मैं सुन रही हूँ…";
     if (window.STT) STT.start();
   }, 600);
 };
 
-<!-- Safe Conversation / Buttons script -->
-<script>
+// ✅ ONLY ONE BUTTON HANDLER
 document.getElementById("startBtn").onclick = startConversation;
+
+// Admin
 document.getElementById("adminBtn").onclick = () => {
   window.location.href = "admin.html";
 };
+</script>
+<!-- ================= END ================= -->
 
 </body>
 </html>
