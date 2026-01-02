@@ -1,200 +1,165 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>अंजली — Admin Panel</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>अंजली — Admin Panel</title>
 
-  <style>
-    :root{
-      --bg:#0f0f12;
-      --panel:#1b1b22;
-      --card:#23232d;
-      --accent:#ffb3b3;
-      --accentSoft:#ffd6d6;
-      --text:#eaeaea;
-      --muted:#a0a0a0;
-      --line:#2f2f3a;
-      --btn:#ffb3b3;
-      --btnText:#1b1b1b;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      min-height:100vh;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Devanagari", Arial, sans-serif;
-      background:radial-gradient(circle at top,var(--panel),var(--bg));
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .panel{
-      width:94%;
-      max-width:560px;
-      background:var(--card);
-      border-radius:22px;
-      padding:20px 18px 22px;
-      box-shadow:0 24px 60px rgba(0,0,0,.6);
-    }
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom:1px solid var(--line);
-      padding-bottom:12px;
-      margin-bottom:16px;
-    }
-    .title{
-      font-size:22px;
-      color:var(--accent);
-    }
-    .badge{
-      font-size:12px;
-      padding:6px 12px;
-      border-radius:999px;
-      background:#2b2b35;
-      border:1px solid var(--line);
-      color:var(--muted);
-    }
-    .section{
-      background:#1a1a22;
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:14px;
-      margin-bottom:12px;
-    }
-    .section h3{
-      margin:0 0 10px;
-      font-size:14px;
-      color:var(--accentSoft);
-    }
-    .info{
-      font-size:13px;
-      color:var(--muted);
-      line-height:1.5;
-    }
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .btn{
-      flex:1;
-      min-width:150px;
-      border:none;
-      border-radius:14px;
-      padding:14px;
-      font-size:14px;
-      cursor:pointer;
-      background:linear-gradient(180deg,var(--btn),#ff9f9f);
-      color:var(--btnText);
-    }
-    .btn.secondary{
-      background:#2a2a35;
-      color:#f1f1f1;
-      border:1px dashed var(--line);
-    }
-    .footer{
-      margin-top:8px;
-      font-size:11px;
-      color:#8a8a8a;
-      text-align:right;
-    }
-    textarea,input{
-      width:100%;
-      padding:10px;
-      border-radius:10px;
-      border:1px solid #333;
-      background:#121212;
-      color:#eee;
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  background:#111;
+  color:#eee;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",Arial;
+}
+
+.panel{
+  max-width:720px;
+  margin:20px auto;
+  background:#1e1e26;
+  padding:18px;
+  border-radius:18px;
+}
+
+h2{color:#ffb3b3;margin-top:0}
+
+textarea,input{
+  width:100%;
+  margin-top:8px;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #333;
+  background:#121212;
+  color:#fff;
+  font-size:14px;
+}
+
+textarea.bulk{
+  min-height:360px;   /* 🔥 बड़ा Bulk Box */
+  line-height:1.5;
+}
+
+button{
+  margin-top:12px;
+  padding:12px 16px;
+  border:none;
+  border-radius:12px;
+  background:#ffb3b3;
+  color:#111;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.msg{
+  font-size:13px;
+  margin-top:6px;
+}
+</style>
 </head>
 
 <body>
 
-<main class="panel">
+<!-- ================= SINGLE LEARNING ================= -->
+<div class="panel">
+<h2>🧠 Single Learning (एक प्रश्न)</h2>
 
-  <div class="header">
-    <div class="title">⚙️ अंजली — Admin Panel</div>
-    <div class="badge">Stage-1 • Stable</div>
-  </div>
+<textarea id="q" placeholder="प्रश्न लिखें"></textarea>
+<textarea id="a" placeholder="उत्तर लिखें"></textarea>
+<input id="t" placeholder="टैग (कॉमा से अलग करें)">
 
-  <div class="section">
-    <h3>स्थिति</h3>
-    <div class="info">
-      Admin Panel सक्रिय है। Offline Learning और Voice सुरक्षित हैं।
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>प्रबंधन</h3>
-    <div class="row">
-      <button class="btn secondary" id="backBtn">← Index</button>
-      <button class="btn secondary" id="viewLearnBtn">सीखा हुआ देखें</button>
-      <button class="btn secondary" id="bulkBtn">Bulk Learning (1000+)</button>
-      <button class="btn" id="learnBtn">🧠 सीखने का बॉक्स</button>
-    </div>
-  </div>
-
-  <div class="footer">Admin • Foundation Layer</div>
-
-</main>
-
-<!-- ================= LEARNING MODAL (HTML BASED) ================= -->
-<div id="learningModal" style="
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:99999;
-">
-  <div style="
-    width:94%;
-    max-width:520px;
-    background:#1e1e1e;
-    color:#eee;
-    border-radius:18px;
-    padding:16px;
-  ">
-    <h3 style="color:#ffd6d6;margin-bottom:10px;">🧠 अंजली को सिखाएँ</h3>
-
-    <textarea id="learnQuestion" placeholder="प्रश्न लिखें"></textarea><br><br>
-    <textarea id="learnAnswer" placeholder="उत्तर लिखें"></textarea><br><br>
-    <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"><br><br>
-
-    <div style="display:flex;gap:10px;justify-content:flex-end;">
-      <button id="learnCancel">रद्द</button>
-      <button id="learnSave">सेव करें</button>
-    </div>
-
-    <div id="learnMsg" style="margin-top:8px;font-size:12px;"></div>
-  </div>
+<button onclick="saveSingle()">सेव करें</button>
+<div id="msg1" class="msg"></div>
 </div>
 
-<!-- Scripts -->
+<!-- ================= BULK LEARNING ================= -->
+<div class="panel">
+<h2>📦 Bulk Learning (100+ / 1000+)</h2>
+
+<textarea id="bulk" class="bulk"
+placeholder="Q: प्रश्न?
+A: उत्तर
+TAGS: टैग1, टैग2
+
+Q: दूसरा प्रश्न?
+A: दूसरा उत्तर
+
+(हर प्रश्न–उत्तर ब्लॉक के बीच एक खाली लाइन रखें)">
+</textarea>
+
+<button onclick="saveBulk()">Bulk सेव करें</button>
+<div id="msg2" class="msg"></div>
+</div>
+
+<!-- ===================================================
+     SCRIPT SECTION (ORDER IS FINAL & FUTURE-SAFE)
+     =================================================== -->
+
+<!-- Core -->
 <script src="core/AnjaliCore.js"></script>
+
+<!-- Storage / Learning -->
 <script src="learning/KnowledgeBase.js"></script>
 <script src="learning/ExperienceMemory.js"></script>
-<script src="admin/admin_learning_ui.js"></script>
 
+<!-- Bridge / Control (Future use) -->
+<script src="core/LearningBridge.js"></script>
+<script src="core/AdminControl.js"></script>
+
+<!-- Admin Tools (Future expansion) -->
+<script src="admin/admin_learning_view.js"></script>
+<script src="admin/admin_bulk_loader.js"></script>
+
+<!-- Voice (No calls from Admin, but loaded safely) -->
+<script src="voice/tts.js"></script>
+<script src="voice/stt.js"></script>
+
+<!-- ================= SAVE LOGIC ================= -->
 <script>
-  document.getElementById("backBtn").onclick = () => location.href="index.html";
+async function saveSingle(){
+  const msg=document.getElementById("msg1");
+  try{
+    await KnowledgeBase.init();
+    await KnowledgeBase.saveOne({
+      question:q.value.trim(),
+      answer:a.value.trim(),
+      tags:t.value.split(",").map(x=>x.trim()).filter(Boolean)
+    });
+    msg.style.color="#9fdf9f";
+    msg.textContent="✔️ प्रश्न–उत्तर सफलतापूर्वक सेव हुआ";
+    q.value=""; a.value=""; t.value="";
+  }catch(e){
+    msg.style.color="#ff9f9f";
+    msg.textContent="❌ सेव नहीं हुआ";
+  }
+}
 
-  // 🔑 सीखने का बॉक्स खोलना
-  document.getElementById("learnBtn").onclick = () => {
-    document.getElementById("learningModal").style.display = "flex";
-    document.getElementById("learnMsg").textContent = "";
-  };
+async function saveBulk(){
+  const msg=document.getElementById("msg2");
+  try{
+    await KnowledgeBase.init();
+    const blocks=bulk.value.split(/\n\s*\n/);
+    let count=0;
 
-  // बंद करना
-  document.getElementById("learnCancel").onclick = () => {
-    document.getElementById("learningModal").style.display = "none";
-  };
+    for(const b of blocks){
+      const q=b.match(/Q:\s*(.+)/i);
+      const a=b.match(/A:\s*(.+)/i);
+      const t=b.match(/TAGS:\s*(.+)/i);
+      if(q && a){
+        await KnowledgeBase.saveOne({
+          question:q[1].trim(),
+          answer:a[1].trim(),
+          tags: t ? t[1].split(",").map(x=>x.trim()) : []
+        });
+        count++;
+      }
+    }
+    msg.style.color="#9fdf9f";
+    msg.textContent=`✔️ ${count} प्रश्न सेव हुए`;
+  }catch(e){
+    msg.style.color="#ff9f9f";
+    msg.textContent="❌ Bulk सेव विफल";
+  }
+}
 </script>
 
 </body>
