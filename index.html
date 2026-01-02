@@ -142,6 +142,25 @@
 <script src="admin/admin_learning_view.js"></script>
 <script src="admin/admin_bulk_loader.js"></script>
 
+<!-- ✅ यही जोड़ें -->
+<script>
+document.getElementById("startBtn").onclick = function () {
+
+  document.getElementById("appStatus").textContent =
+    "मैं सुन रही हूँ… कृपया प्रश्न बोलिए";
+
+  if (window.TTS) {
+    TTS.init();                 // 🔓 Mobile audio unlock
+    TTS.speak("मैं सुन रही हूँ।");
+  }
+
+  if (window.STT) {
+    STT.start();                // 🎤 STT शुरू
+  }
+
+};
+</script>
+
   <!-- ========= BASIC LOGIC ========= -->
   <script>
     document.getElementById("startBtn").onclick = function(){
