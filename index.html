@@ -144,19 +144,33 @@
 
 
 
-  <!-- ========= BASIC LOGIC ========= -->
-  <script>
-    document.getElementById("startBtn").onclick = function(){
-      document.getElementById("appStatus").textContent =
-        "संवाद प्रारंभ";
-      if (window.TTS) {
-        TTS.speak("अंजली आपसे संवाद के लिए तैयार है।");
-      }
-    };
+<script>
+let audioReady = false;
 
-    document.getElementById("adminBtn").onclick = function(){
-      window.location.href = "admin.html";
-    };
-  </script>
+document.getElementById("startBtn").onclick = function () {
+
+  const status = document.getElementById("appStatus");
+  status.textContent = "अंजली तैयार है";
+
+  // 🔓 Audio unlock — केवल पहली बार
+  if (window.TTS && !audioReady) {
+    TTS.init();
+    audioReady = true;
+  }
+
+  // 🔊 पहले अंजली बोले
+  if (window.TTS) {
+    TTS.speak("अब आप प्रश्न बोल सकते हैं।");
+  }
+
+  // 🎤 बोलना खत्म होने के बाद ही सुनना शुरू करें
+  setTimeout(() => {
+    status.textContent = "मैं सुन रही हूँ…";
+    if (window.STT) {
+      STT.start();
+    }
+  }, 1200); // ⏱️ TTS पूरा होने का सुरक्षित समय
+};
+</script>
 </body>
 </html>
