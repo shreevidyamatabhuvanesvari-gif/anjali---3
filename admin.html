@@ -102,10 +102,19 @@
       color:#8a8a8a;
       text-align:right;
     }
+    textarea,input{
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #333;
+      background:#121212;
+      color:#eee;
+    }
   </style>
 </head>
 
 <body>
+
 <main class="panel">
 
   <div class="header">
@@ -126,17 +135,7 @@
       <button class="btn secondary" id="backBtn">← Index</button>
       <button class="btn secondary" id="viewLearnBtn">सीखा हुआ देखें</button>
       <button class="btn secondary" id="bulkBtn">Bulk Learning (1000+)</button>
-
-      <!-- 🔑 यही असली सीखने का बटन है -->
       <button class="btn" id="learnBtn">🧠 सीखने का बॉक्स</button>
-
-    </div>
-  </div>
-
-  <div class="section">
-    <h3>सूचना</h3>
-    <div class="info">
-      यह Panel अब वास्तविक Learning के लिए तैयार है।
     </div>
   </div>
 
@@ -144,24 +143,58 @@
 
 </main>
 
+<!-- ================= LEARNING MODAL (HTML BASED) ================= -->
+<div id="learningModal" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+">
+  <div style="
+    width:94%;
+    max-width:520px;
+    background:#1e1e1e;
+    color:#eee;
+    border-radius:18px;
+    padding:16px;
+  ">
+    <h3 style="color:#ffd6d6;margin-bottom:10px;">🧠 अंजली को सिखाएँ</h3>
+
+    <textarea id="learnQuestion" placeholder="प्रश्न लिखें"></textarea><br><br>
+    <textarea id="learnAnswer" placeholder="उत्तर लिखें"></textarea><br><br>
+    <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"><br><br>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button id="learnCancel">रद्द</button>
+      <button id="learnSave">सेव करें</button>
+    </div>
+
+    <div id="learnMsg" style="margin-top:8px;font-size:12px;"></div>
+  </div>
+</div>
+
 <!-- Scripts -->
 <script src="core/AnjaliCore.js"></script>
 <script src="learning/KnowledgeBase.js"></script>
 <script src="learning/ExperienceMemory.js"></script>
-
 <script src="admin/admin_learning_ui.js"></script>
-<script src="admin/admin_learning_view.js"></script>
-<script src="admin/admin_bulk_loader.js"></script>
-
-<script src="core/LearningBridge.js"></script>
-<script src="core/AdminControl.js"></script>
-
-<script src="voice/tts.js"></script>
-<script src="voice/stt.js"></script>
 
 <script>
   document.getElementById("backBtn").onclick = () => location.href="index.html";
 
+  // 🔑 सीखने का बॉक्स खोलना
+  document.getElementById("learnBtn").onclick = () => {
+    document.getElementById("learningModal").style.display = "flex";
+    document.getElementById("learnMsg").textContent = "";
+  };
+
+  // बंद करना
+  document.getElementById("learnCancel").onclick = () => {
+    document.getElementById("learningModal").style.display = "none";
+  };
 </script>
 
 </body>
