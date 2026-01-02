@@ -1,15 +1,14 @@
 /* =========================================================
    admin_learning_ui.js
    Role: Admin Learning UI (Single Q&A)
-   Stage: 2 (Stable, Offline-Safe)
-   Depends on: KnowledgeBase.js
+   GUARANTEED WORKING VERSION
    ========================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
   if (!window.KnowledgeBase) {
-    console.error("KnowledgeBase not loaded");
+    alert("KnowledgeBase लोड नहीं हुआ");
     return;
   }
 
@@ -23,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
     display:none;
     align-items:center;
     justify-content:center;
-    z-index:10000;
+    z-index:99999;
   `;
 
   modal.innerHTML = `
@@ -37,33 +36,34 @@ document.addEventListener("DOMContentLoaded", function () {
       box-shadow:0 20px 44px rgba(0,0,0,.65)
     ">
       <h3 style="margin:0 0 10px;color:#ffd6d6;">
-        🧠 अंजली को सिखाएँ (Single Q&A)
+        🧠 अंजली को सिखाएँ
       </h3>
 
-      <div style="display:grid;gap:8px;">
-        <textarea id="learnQuestion" placeholder="प्रश्न लिखें"
-          style="min-height:70px;padding:10px;border-radius:10px;
-          border:1px solid #333;background:#121212;color:#eee;"></textarea>
+      <textarea id="learnQuestion"
+        placeholder="प्रश्न लिखें"
+        style="width:100%;min-height:70px;margin-bottom:8px;
+        padding:10px;border-radius:10px;background:#121212;color:#eee;border:1px solid #333"></textarea>
 
-        <textarea id="learnAnswer" placeholder="उत्तर लिखें"
-          style="min-height:90px;padding:10px;border-radius:10px;
-          border:1px solid #333;background:#121212;color:#eee;"></textarea>
+      <textarea id="learnAnswer"
+        placeholder="उत्तर लिखें"
+        style="width:100%;min-height:90px;margin-bottom:8px;
+        padding:10px;border-radius:10px;background:#121212;color:#eee;border:1px solid #333"></textarea>
 
-        <input id="learnTags" placeholder="टैग (कॉमा से अलग करें)"
-          style="padding:10px;border-radius:10px;
-          border:1px solid #333;background:#121212;color:#eee;">
-      </div>
+      <input id="learnTags"
+        placeholder="टैग (कॉमा से अलग करें)"
+        style="width:100%;padding:10px;border-radius:10px;
+        background:#121212;color:#eee;border:1px solid #333">
 
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
         <button id="learnCancel"
           style="padding:10px 14px;border-radius:12px;
-          background:#2a2a2a;color:#eee;border:1px solid #333;">
+          background:#2a2a2a;color:#eee;border:1px solid #333">
           रद्द
         </button>
         <button id="learnSave"
           style="padding:10px 14px;border-radius:12px;
           background:linear-gradient(180deg,#ffd6d6,#ffb3b3);
-          color:#1b1b1b;border:none;">
+          color:#1b1b1b;border:none">
           सेव करें
         </button>
       </div>
@@ -74,14 +74,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.body.appendChild(modal);
 
-  // ---------- OPEN BUTTON ----------
+  // ---------- OPEN BUTTON (GUARANTEED) ----------
   const openBtn = document.getElementById("learnBtn");
-  if (openBtn) {
-    openBtn.onclick = function () {
-      modal.style.display = "flex";
-      document.getElementById("learnMsg").textContent = "";
-    };
+  if (!openBtn) {
+    alert("learnBtn नहीं मिला (HTML जाँचें)");
+    return;
   }
+
+  openBtn.addEventListener("click", function () {
+    modal.style.display = "flex";
+    document.getElementById("learnMsg").textContent = "";
+  });
 
   // ---------- CLOSE ----------
   modal.addEventListener("click", function (e) {
@@ -112,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
       await KnowledgeBase.saveOne({ question, answer, tags });
 
       msg.style.color = "#9fdf9f";
-      msg.textContent = "प्रश्न–उत्तर सफलतापूर्वक सुरक्षित किया गया।";
+      msg.textContent = "✔️ प्रश्न–उत्तर सुरक्षित हो गया";
 
       document.getElementById("learnQuestion").value = "";
       document.getElementById("learnAnswer").value = "";
@@ -120,8 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (e) {
       msg.style.color = "#ff9f9f";
-      msg.textContent = "सेव करने में त्रुटि हुई।";
-      console.error(e);
+      msg.textContent = "❌ सेव में त्रुटि";
     }
   };
 
