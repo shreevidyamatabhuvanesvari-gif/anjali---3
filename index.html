@@ -183,8 +183,7 @@ document.getElementById("adminBtn").onclick = () => {
   window.location.href = "admin.html";
 };
 </script>
-
-<!-- ✅ Service Worker Registration (यहीं होना चाहिए) -->
+  <!-- ✅ Service Worker Registration (यहीं होना चाहिए) -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("js/sw.js")
@@ -192,9 +191,6 @@ if ("serviceWorker" in navigator) {
     .catch(err => console.error("❌ SW registration failed", err));
 }
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
