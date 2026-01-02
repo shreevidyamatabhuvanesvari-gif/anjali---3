@@ -40,11 +40,11 @@
       overflow:hidden;
       border:3px solid #f0c4c4;
       box-shadow:0 6px 14px rgba(0,0,0,.15);
-      background:#f6dcdc;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:42px;
+    }
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
     }
     .title{
       font-size:26px;
@@ -96,8 +96,11 @@
 <body>
   <main class="card">
 
-    <!-- 🌸 AVATAR -->
-    <div class="avatar">🌸</div>
+<!-- 🌸 AVATAR -->
+<div class="avatar">
+  <img src="avatar.png" alt="Anjali Avatar"
+       style="width:84px;height:84px;border-radius:50%;object-fit:cover;">
+</div>
 
     <div class="title">अंजली</div>
     <div class="subtitle">स्नेहपूर्ण • समझदार • मर्यादित</div>
@@ -112,54 +115,65 @@
     </div>
 
     <div class="footer">
-      Foundation • Stage-1 (Stable)
+      Foundation • Stage-1
     </div>
   </main>
 
   <!-- ===================================================
-       SCRIPTS (ORDER IS CRITICAL – DO NOT CHANGE)
-       =================================================== -->
+     SCRIPTS (ORDER IS IMPORTANT & FUTURE SAFE)
+     =================================================== -->
 
-  <!-- Core -->
-  <script src="core/AnjaliCore.js"></script>
+<!-- Core -->
+<script src="core/AnjaliCore.js"></script>
 
-  <!-- Learning -->
-  <script src="learning/KnowledgeBase.js"></script>
-  <script src="learning/ExperienceMemory.js"></script>
+<!-- Learning -->
+<script src="learning/KnowledgeBase.js"></script>
+<script src="learning/ExperienceMemory.js"></script>
 
-  <!-- Bridge / Control -->
-  <script src="core/LearningBridge.js"></script>
-  <script src="core/AdminControl.js"></script>
+<!-- Bridge / Control -->
+<script src="core/LearningBridge.js"></script>
+<script src="core/AdminControl.js"></script>
 
-  <!-- Voice -->
-  <script src="voice/tts.js"></script>
-  <script src="voice/stt.js"></script>
+<!-- Voice -->
+<script src="voice/tts.js"></script>
+<script src="voice/stt.js"></script>
 
-  <!-- ===================================================
-       FINAL & ONLY BUTTON LOGIC (NO DUPLICATION)
-       =================================================== -->
+<!-- Admin tools (future use from index if needed) -->
+<script src="admin/admin_learning_view.js"></script>
+<script src="admin/admin_bulk_loader.js"></script>
+
+<!-- ✅ यही जोड़ें -->
+<script>
+document.getElementById("startBtn").onclick = function () {
+
+  document.getElementById("appStatus").textContent =
+    "मैं सुन रही हूँ… कृपया प्रश्न बोलिए";
+
+  if (window.TTS) {
+    TTS.init();                 // 🔓 Mobile audio unlock
+    TTS.speak("मैं सुन रही हूँ।");
+  }
+
+  if (window.STT) {
+    STT.start();                // 🎤 STT शुरू
+  }
+
+};
+</script>
+
+  <!-- ========= BASIC LOGIC ========= -->
   <script>
-    document.getElementById("startBtn").onclick = function () {
-
+    document.getElementById("startBtn").onclick = function(){
       document.getElementById("appStatus").textContent =
-        "मैं सुन रही हूँ… कृपया प्रश्न बोलिए";
-
-      // 🔊 Voice unlock + speak
+        "संवाद प्रारंभ";
       if (window.TTS) {
-        TTS.init();                 // 🔓 mobile audio unlock
-        TTS.speak("मैं सुन रही हूँ।");
-      }
-
-      // 🎤 Start listening
-      if (window.STT) {
-        STT.start();
+        TTS.speak("अंजली आपसे संवाद के लिए तैयार है।");
       }
     };
 
-    document.getElementById("adminBtn").onclick = function () {
+    document.getElementById("adminBtn").onclick = function(){
       window.location.href = "admin.html";
     };
   </script>
-
 </body>
 </html>
